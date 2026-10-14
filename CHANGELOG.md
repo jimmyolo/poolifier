@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.4.1](https://github.com/poolifier/poolifier/compare/v5.4.0...v5.4.1) (2026-10-14)
+
+
+### 📚 Documentation
+
+* publish documentation ([58f37c7](https://github.com/poolifier/poolifier/commit/58f37c77b0f9237b9616494d72da259fcb7bc1b5))
+
 ## [5.4.0](https://github.com/poolifier/poolifier/compare/v5.3.2...v5.4.0) (2026-10-14)
 
 
