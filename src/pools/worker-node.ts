@@ -47,6 +47,7 @@ export class WorkerNode<Worker extends IWorker, Data = unknown>
   /** @inheritdoc */
   public readonly worker: Worker
   private readonly taskFunctionsUsage: Map<string, WorkerUsage>
+  private readonly workerExit: Promise<void>
 
   /**
    * Constructs a new worker node.
@@ -60,6 +61,13 @@ export class WorkerNode<Worker extends IWorker, Data = unknown>
     this.worker = createWorker<Worker>(type, filePath, {
       env: opts.env,
       workerOptions: opts.workerOptions,
+    })
+    // Listen from creation: a worker that exits on its own (e.g. once it has
+    // handled the kill message) must not be missed by terminate().
+    this.workerExit = new Promise<void>(resolve => {
+      this.registerOnceWorkerEventHandler('exit', () => {
+        resolve()
+      })
     })
     this.info = initWorkerInfo(this.worker)
     this.usage = this.initWorkerUsage()
@@ -169,11 +177,6 @@ export class WorkerNode<Worker extends IWorker, Data = unknown>
 
   /** @inheritdoc */
   public async terminate (): Promise<void> {
-    const waitWorkerExit = new Promise<void>(resolve => {
-      this.registerOnceWorkerEventHandler('exit', () => {
-        resolve()
-      })
-    })
     this.closeMessageChannel()
     this.removeAllListeners()
     switch (this.info.type) {
@@ -188,7 +191,7 @@ export class WorkerNode<Worker extends IWorker, Data = unknown>
         await this.worker.terminate?.()
         break
     }
-    await waitWorkerExit
+    await this.workerExit
     this.worker.removeAllListeners()
   }
 
