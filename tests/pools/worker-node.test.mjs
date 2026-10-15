@@ -474,4 +474,18 @@ describe('Worker node test suite', () => {
     expect(threadWorkerNode.deleteTaskFunctionWorkerUsage('fn1')).toBe(true)
     expect(threadWorkerNode.taskFunctionsUsage.size).toBe(1)
   })
+
+  it('Worker node terminate() resolves when the worker already exited', async () => {
+    const workerNode = new WorkerNode(
+      WorkerTypes.thread,
+      './tests/worker-files/thread/testWorker.mjs',
+      {
+        tasksQueueBackPressureSize: 12,
+        tasksQueueBucketSize: 6,
+        tasksQueuePriority: true,
+      }
+    )
+    await workerNode.worker.terminate()
+    await expect(workerNode.terminate()).resolves.toBeUndefined()
+  }, 10000)
 })
